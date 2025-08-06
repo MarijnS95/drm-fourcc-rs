@@ -459,3 +459,27 @@ pub mod tests {
         assert_eq!(a, b);
     }
 }
+
+#[derive(Clone, Copy, Debug)]
+struct AmdModifier {
+    ver: u8,
+    tile: u8,
+}
+
+impl From<u64> for AmdModifier {
+    fn from(value: u64) -> Self {
+        let tile = value as u32 >> consts::AMD_FMT_MOD_TILE_SHIFT & consts::AMD_FMT_MOD_TILE_MASK;
+        Self {
+            ver: value as u8,
+            tile: tile as u8,
+        }
+    }
+}
+
+impl From<AmdModifier> for u64 {
+    fn from(value: AmdModifier) -> Self {
+        (consts::DRM_FOURCC_AMD as u64) << 56
+            | value.ver as u64
+            | (value.tile as u64) << consts::AMD_FMT_MOD_TILE_SHIFT
+    }
+}
